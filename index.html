@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DALL E</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+
+    <style>
+      *{
+        font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
+      }
+
+      body, html{
+        background-color: #eee;
+      }
+
+      .map-container{
+        overflow:hidden;
+        padding-bottom:56.25%;
+        position:relative;
+        height:0;
+      }
+      .map-container iframe{
+        left:0;
+        top:0;
+        height:100%;
+        width:100%;
+        position:absolute;
+      }
+
+      .mycard {
+        width: 420px;
+        height: 290px;
+        margin: 80px auto;
+        position: relative;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 15px 15px 25px -5px rgba(0, 0, 0, 0.3);
+      }
+      .mycard .top {
+        height: 180px;
+        width: 100%;
+        position: relative;
+      }
+      .mycard .top .background-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px 8px 0 0;
+        background-image: url("https://images.pexels.com/photos/1072179/pexels-photo-1072179.jpeg?cs=srgb&dl=pexels-c%C3%A1tia-matos-1072179.jpg&fm=jpg");
+        background-size: 100%;
+        background-position: 0 -16px;
+        filter: blur(1px);
+        filter: brightness(90%);
+        opacity: 0.85;
+      }
+      .mycard .top .circle {
+        width: 120px;
+        height: 120px;
+        background-color: white;
+        border-radius: 100% 100% 0 0;
+        position: absolute;
+        bottom: -45px;
+        left: 35px;
+      }
+      .mycard .top .photo {
+        width: 110px;
+        height: 110px;
+        object-fit: cover;
+      /*  object-position: 0 -2px;*/
+        border-radius: 100%;
+        position: absolute;
+        bottom: -42px;
+        left: 40px;
+      }
+      .mycard .top .info {
+        font-family: 微軟正黑體, Roboto;
+        position: absolute;
+      }
+      .mycard .top .myname {
+        font-size: 35px;
+        font-weight: bold;
+        color: white;
+        bottom: 35px;
+        left: 175px;
+      }
+      .mycard .top .name-en {
+        font-size: 15px;
+        color: white;
+        bottom: 15px;
+        left: 180px;
+      }
+      .mycard .top .myschool {
+        color: #555;
+        font-size: 13px;
+        bottom: -38px;
+        left: 170px;
+      }
+      .mycard .top .mydep {
+        color: #555;
+        font-size: 13px;
+        bottom: -38px;
+        left: 285px;
+      }
+      .mycard .top .mymail {
+        color: #555;
+        font-size: 10px;
+        bottom: -70px;
+        left: 170px;
+      }
+
+      .openai-img {
+        width: 100%;
+        height: 50%;
+        object-fit: cover;
+        display:  inline-block;
+        transition-duration: 0.8s;
+      }
+
+      .openai-intro {
+        display:  inline-block;
+      }
+
+      .openai-img:hover{
+        transform: scale(1.5);
+        cursor: pointer;
+      }
+
+    </style>
+
+  </head>
+  <body>
+    <!-- 導覽列 -->
+    <nav class="navbar navbar-light bg-light navbar-expand-md">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">DALL E</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+          data-bs-target="#navbar1">
+          <span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbar1">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" 
+                data-bs-toggle="dropdown">About</a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#about">Info</a>
+                <a class="dropdown-item" href="#about">History</a>
+              </div>
+            </li>
+            <li class="nav-item active"><a class="nav-link" href="#contact">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
+          </ul>
+          <form class="form-inline d-flex">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+            
+      </div>
+    </nav>
+    
+  
+    <!-- 輪播 -->
+    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+      <!-- 輪播指示 -->
+      <ol class="carousel-indicators">
+        <li data-bs-target="#myCarousel" data-bs-slide-to="0" class="active"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="1"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="2"></li>
+      </ol>
+      <!-- 輪播內容 -->
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="https://cdn.openai.com/outpainting/blog-cover.jpg" class="d-block w-100" alt="family" style="height: 600px; object-fit: cover;">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Original outpainting by Emma Catnip</h5>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="https://cdn.openai.com/outpainting/draft-20220826a/girl-with-a-pearl-earring.jpeg" class="d-block w-100" alt="fireplace" style="height: 600px;object-fit: cover;">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>
+              Original: Girl with a Pearl Earring by Johannes Vermeer
+              <br>
+              Outpainting: August Kamp
+            </h5>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="https://f.hellowork.com/blogdumoderateur/2022/09/dall-e-openai.jpg" class="d-block w-100" alt="fireplace" style="height: 600px;object-fit: cover;">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Start your AI generated art now</h5>
+          </div>
+        </div>
+      </div>
+      <!-- 輪播控制 -->
+      <a class="carousel-control-prev" href="#myCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span></a>
+      <a class="carousel-control-next" href="#myCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span></a>
+    </div>
+    
+  
+    <!-- 內容區 -->
+    
+
+      <!-- 兩個卡片 橫式-->
+      <div class="container">
+        <br>
+        <h1 id="about">About</h1>
+
+
+        <div class="row"  style="display: flex; justify-content: space-between">
+          <div class="card mb-3 col-lg-6" style="max-width: 620px;" id="info">
+            <div class="row no-gutters">
+              <div class="col-md-6">
+                <img src="https://sw.cool3c.com/user/6/2022/93012419-0b34-4745-a9fa-36b21a953a66.png?auto=compress&fix=max&w=2560" class="card-img" alt="...">
+              </div>
+              <div class="col-md-6">
+                <div class="card-body">
+                  <h5 class="card-title">Info</h5>
+                  <p class="card-text" style="font-size: 14px">DALL·E 2 is a new AI system that can create realistic images and art from a description in natural language.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+          <div class="card mb-3 col-lg-6" style="max-width: 620px;" id="history">
+            <div class="row no-gutters">
+              <div class="col-md-6">
+                <img src="https://media.newyorker.com/photos/62be583eb7a6a0c1a7d7bf4f/16:9/w_1280,c_limit/Tak-Lance-OpenAI.jpg" class="card-img" alt="...">
+              </div>
+              <div class="col-md-6">
+                <div class="card-body">
+                  <h5 class="card-title">History</h5>
+                  <p class="card-text" style="font-size: 14px">In January 2021, OpenAI introduced DALL·E. One year later, DALL·E 2, generates more realistic and accurate images with 4x greater resolution.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      
+
+        
+      <!-- 四個卡片 直式-->
+      <div id="gallery">
+        <div class="container">
+          <br>
+          <h1>Gallery</h1>
+
+
+          <div class="row">
+            <div class="col-12  col-ms-6 col-md-3">
+              <div class="card" style="width: 300px">
+                <div class="card-header">DALL.E</div>
+                <div class="card-body">
+                  <img src="image/digtal art that shows future world.png" alt="..." class="img-thumbnail">
+                  <h4 class="card-title">Digtal Art</h5>
+                  <p class="card-text" style="height: 80px;">A digtal art that shows future world.</p>
+                  <a href="#" class="btn btn-primary">Try Yours</a>
+                </div>
+                <div class="card-footer">2022◎DALL.E</div>
+              </div>
+            </div>
+
+            <div class="col-12  col-sm-6 col-md-3">
+              <div class="card" style="width: 300px">
+                <div class="card-header">DALL.E</div>
+                <div class="card-body">
+                  <img src="image/An oil painting thanks giving meals.png" alt="..." class="img-thumbnail">
+                  <h4 class="card-title">Oil Painting</h5>
+                  <p class="card-text" style="height: 80px;">An oil painting of thanks giving meals.</p>
+                  <a href="#" class="btn btn-primary">Try Yours</a>
+                </div>
+                <div class="card-footer">2022◎DALL.E</div>
+              </div>
+            </div>
+
+            <div class="col-12  col-sm-6 col-md-3">
+              <div class="card" style="width: 300px">
+                <div class="card-header">DALL.E</div>
+                <div class="card-body">
+                  <img src="image/A photo of Michelangelo's sculpture of David wearing headphones djing.png" alt="..." class="img-thumbnail">
+                  <h4 class="card-title">Photo</h5>
+                  <p class="card-text" style="height: 80px;">A photo of Michelangelo's sculpture of David wearing headphones djing</p>
+                  <a href="#" class="btn btn-primary">Try Yours</a>
+                </div>
+                <div class="card-footer">2022◎DALL.E</div>
+              </div>
+            </div>
+        
+
+            <div class="col-12  col-sm-6 col-md-3">
+              <div class="card" style="width: 300px">
+                <div class="card-header">DALL.E</div>
+                <div class="card-body">
+                  <img src="image/A 3D render of an astronaut walking in a green desert.png" alt="..." class="img-thumbnail">
+                  <h4 class="card-title">3D Rander</h5>
+                  <p class="card-text" style="height: 80px;">A 3D render of an astronaut walking in a green desert</p>
+                  <a href="#" class="btn btn-primary">Try Yours</a>
+                </div>
+                <div class="card-footer">2022◎DALL.E</div>
+              </div>
+            </div>
+          </div>
+          <!-- 四個卡片 直式-->
+        
+          <!-- My NameCard -->
+          <br>
+          <br>
+          <h1>My Name Card</h1>
+          <div class="mycard" id="mycard">
+            <div class="top" id="top">
+              <div class="background-img" id="background-img"></div>
+              <div class="circle" id="circle"></div>
+              <img class="photo" src="https://s.yimg.com/ny/api/res/1.2/0wj9LndsMtHaLJU8.tTh3w--/YXBwaWQ9aGlnaGxhbmRlcjt3PTY0MA--/https://s.yimg.com/cd/resizer/2.0/original/-Q7ql8v_Hy83ubHz_N1KOxjFLbo" alt="">
+              <div class="info myname" id="myname">劉丞恩</div>
+              <div class="info name-en" id="name-en">Liu Cheng En</div>
+              <div class="info myschool" id="myschool">國立台北教育大學</div>
+              <div class="info mydep" id="mydep">數位科技設計學系</div>
+              <div class="info mymail" id="mymail">s111119024@stu.ntue.edu.tw</div>
+            </div>
+            <div class="bottom"></div>
+          </div>
+          <!-- My NameCard -->
+
+          <br>
+          <!--Google map-->
+          <h1>Location</h1>
+          <div id="map-container-google-1" class="z-depth-1-half map-container" style="height: 500px">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d51678192.361361444!2d165.86661960000006!3d37.76222389999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808f7e3aef063141%3A0xcd8d4b8ec7bc4d0c!2sOpenAI!5e0!3m2!1szh-TW!2stw!4v1672102128843!5m2!1szh-TW!2stw" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+          <!--Google map-->
+      
+          <!--OpenAI-->
+          <br>
+          <h1>OpenAI</h1>
+          <div class="row">
+            <div class="openai">
+              <div class="col-md-4 col-12" style="display: inline-block; width: 50%; overflow: hidden">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Pioneer_Building%2C_San_Francisco_%282019%29_-1.jpg/1920px-Pioneer_Building%2C_San_Francisco_%282019%29_-1.jpg" alt="OpenAI" class="openai-img">
+              </div>
+              <div class="openai-intro" class="col-md-8 col-12">
+                <p>
+                  OpenAI is an artificial intelligence (AI) research laboratory consisting of the for-profit corporation OpenAI LP and its parent company, the non-profit OpenAI Inc. The company conducts research in the field of AI with the stated goal of promoting and developing friendly AI in a way that benefits humanity as a whole. The organization was founded in San Francisco in late 2015 by Sam Altman, Elon Musk, and others, who collectively pledged US$1 billion. Musk resigned from the board in February 2018 but remained a donor. In 2019, OpenAI LP received a US$1 billion investment from Microsoft and Matthew Brown Companies. OpenAI is headquartered at the Pioneer Building in Mission District, San Francisco.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!--Youtube Video-->
+          <br>
+          <h1>Youtube Video</h1>
+          <div class="y-video" style="margin: 10px auto; display: flex; justify-content: center; align-items: center;">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/qTgPSKKjfVg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <p style="margin: 0 50px">
+              DALL·E 2 is a new AI system that can create realistic images and art from a description in natural language.
+              <br>
+              <br>
+              Learn more: <a href="https://openai.com/dall-e-2/">openai.com/dall-e-2</a>
+            </p>
+          </div>
+          
+          <!--Youtube Video-->
+          
+
+        
+                        
+      
+  
+
+    <br>
+    <!-- 頁尾 -->
+  <footer  style="background-color: #eee;">
+    <div class="container" style="padding: 5px 0">
+ 
+      <div class="container-fluid" style="display:inline-block;display:flex; justify-content: space-between; margin-top: 20px;">
+        <div>
+          ©2022 OpenAI DALL E 
+          <u style="color: blue; cursor: pointer; margin-right: 10px"> Privacy </u>
+          <u style="color: blue; cursor: pointer;" id="contact"> Contact </u>
+        </div>
+           
+        <div>
+          <a href="#">Back to top</a>
+        </div>
+         
+      </div>
+    </div>
+
+
+     
+  </footer>
+  </body>
+  
+</html>
